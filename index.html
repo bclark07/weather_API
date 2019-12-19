@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+    integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
+  <title>Weather Page</title>
+</head>
+
+<body>
+  <div class=search_city>
+    <p> What city do you want the weather for?</p>
+    <input class="city">
+    <button id="retrieve">
+      <i class="fas fa-search"> Search</i>
+    </button>
+  </div>
+
+  <div class="return_results">
+    <h1 class="result_city"></h1>
+    <!--created in script-->
+    <!-- add today's m/d date -->
+    <!-- add city image -->
+    <div class="temp"></div>
+    <div class="wind"></div>
+    <div class="humidity"></div>
+    <div class="UVindex"></div>
+  </div>
+  <br>
+  <div class="5_day">5 day goes here
+
+  </div>
+
+  <!-- These are copied from a different assignment, how know which ones I need? -->
+  <!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js">
+  </script> -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+  <script type="text/javascript">
+    var APIKey = "97dd4cc64358226e6742b24a9af7c830";
+    var place = "";
+
+    //click event on #retrieve to get value from neighbor box .city and update search
+    $("#retrieve").on("click", function () {
+      //pulls data from input box 
+      var search_button = $(this).siblings("input");
+      place = search_button.val();
+      console.log(place); //can delete later
+      // save in localStorage??
+      localStorage.setItem("activity", place); //will override previous unless store in array
+      //get item used later if need it
+
+
+      // builds the URL to query the database add more with &itemkey=variable
+      var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + place + "&APPID=" + APIKey;
+      console.log(queryURL);
+      // from my email api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=97dd4cc64358226e6742b24a9af7c830
+
+      // Runs AJAX call to the OpenWeatherMap API
+      $.ajax({
+        url: queryURL,
+        method: "GET"
+      })
+        .then(function (response) {
+          // Log the resulting object
+          console.log(response);
+
+          // Transfer content to HTML
+
+          // <h1 class="result_city"></h1>
+          //   <div class="temp"></div>
+          //   <div class="wind"></div>
+          //   <div class="humidity"></div>
+          //   <div class="UVindex"></div>
+
+
+          $(".result_city").text(response.name + " Weather");
+          $(".temp").text("Temperature (F) " + response.main.temp);
+          $(".wind").text("Wind Speed: " + response.wind.speed);
+          $(".humidity").text("Humidity: " + response.main.humidity);
+          $(".UVindex").text("UV index " + response.main.temp);
+
+
+          // Converts the temp to Kelvin with the below formula
+          var tempF = (response.main.temp - 273.15) * 1.80 + 32;
+          $(".tempF").text("Temperature (Kelvin) " + tempF);
+
+        });
+
+    });
+  </script>
+
+
+</body>
+
+</html>
