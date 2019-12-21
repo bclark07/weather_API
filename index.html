@@ -30,7 +30,8 @@
     <div class="UVindex"></div>
   </div>
   <br>
-  <div class="5_day">5 day goes here
+  <div class="5_day">
+    <button id="5_day">5 Day Forecast</button>
 
   </div>
 
@@ -51,16 +52,9 @@
       //pulls data from input box 
       var search_button = $(this).siblings("input");
       place = search_button.val();
-      console.log(place); //can delete later
-      // save in localStorage??
       localStorage.setItem("activity", place); //will override previous unless store in array
-      //get item used later if need it
 
-
-      // builds the URL to query the database add more with &itemkey=variable
       var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + place + "&APPID=" + APIKey;
-      console.log(queryURL);
-      // from my email api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=97dd4cc64358226e6742b24a9af7c830
 
       // Runs AJAX call to the OpenWeatherMap API
       $.ajax({
@@ -71,29 +65,37 @@
           // Log the resulting object
           console.log(response);
 
-          // Transfer content to HTML
-
-          // <h1 class="result_city"></h1>
-          //   <div class="temp"></div>
-          //   <div class="wind"></div>
-          //   <div class="humidity"></div>
-          //   <div class="UVindex"></div>
-
-
           $(".result_city").text(response.name + " Weather");
           $(".temp").text("Temperature (F) " + response.main.temp);
           $(".wind").text("Wind Speed: " + response.wind.speed);
           $(".humidity").text("Humidity: " + response.main.humidity);
           $(".UVindex").text("UV index " + response.main.temp);
 
-
           // Converts the temp to Kelvin with the below formula
           var tempF = (response.main.temp - 273.15) * 1.80 + 32;
           $(".tempF").text("Temperature (Kelvin) " + tempF);
-
         });
-
     });
+
+    //5 day forecast calls
+    $("#5_day").on("click", function () {
+      //retreive from local storage
+      place = localStorage.getItem("activity"); 
+
+      // builds the URL to query the database add more with &itemkey=variable
+      var queryURL5_day = "https://api.openweathermap.org/data/2.5/forecast?q=" + place + "&APPID=" + APIKey;
+      console.log(queryURL5_day);
+
+      $.ajax({
+        url: queryURL5_day,
+        method: "GET"
+      })
+        .then(function (response) {
+          console.log("success");
+          // Log the resulting object
+        });
+    });
+
   </script>
 
 
