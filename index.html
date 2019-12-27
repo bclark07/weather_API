@@ -20,6 +20,7 @@
   </div>
 
   <div class="return_results">
+    <!-- div for current weather  -->
     <h1 class="result_city"></h1>
     <!--created in script-->
     <!-- add today's m/d date -->
@@ -32,7 +33,6 @@
   <br>
   <div class="5_day">
     <button id="5_day">5 Day Forecast</button>
-
   </div>
 
   <!-- These are copied from a different assignment, how know which ones I need? -->
@@ -45,56 +45,115 @@
 
   <script type="text/javascript">
     var APIKey = "97dd4cc64358226e6742b24a9af7c830";
-    var place = "";
+    var logged_string = window.localStorage.getItem("cities");
+    var recent_cities = [];
+
+    function initial_page() {
+      if (logged_string !== null) {
+        recent_cities = logged_string.split(","); 
+        var position = recent_cities.length;
+        //displays weather from most recent search
+        var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + recent_cities[position - 1] + "&APPID=" + APIKey;
+        $.ajax({
+          url: queryURL,
+          method: "GET"
+        })
+          .then(function (response) {
+            // Log the resulting object
+            console.log(response);
+            var tempF = (response.main.temp - 273.15) * 1.8 + 32; //how round this
+            $(".result_city").text(response.name + " Weather");
+            $(".temp").text("Temperature (F) " + tempF);
+            $(".wind").text("Wind Speed: " + response.wind.speed);
+            $(".humidity").text("Humidity: " + response.main.humidity);
+            $(".UVindex").text("UV index " + response.main.temp); //figure out which one is the UV index
+          });
+      } else { console.log("nothing saved"); }
+    }
 
     //click event on #retrieve to get value from neighbor box .city and update search
+
     $("#retrieve").on("click", function () {
       //pulls data from input box 
-      var search_button = $(this).siblings("input");
-      place = search_button.val();
-      localStorage.setItem("activity", place); //will override previous unless store in array
+      var place = $(this).siblings("input").val();
+      if (recent_cities.length < 5) {
+        console.log("short");
+        recent_cities.push(place);
+        window.localStorage.setItem("cities", recent_cities);
+      } else {
+        console.log("too long");
+        recent_cities.splice(0, 1);
+        recent_cities.push(place);
+        window.localStorage.setItem("cities", recent_cities);
+      }
 
+      // need to do stringify and parse on place1 then place2 
+      //place 1 - string does [obj obj], parse doensnt work
+
+
+      // window.localStorage.setItem("location", place_obj);
+      // var test_array1 = window.localStorage.getItem("location");
+      // console.log(test_array1);
+
+
+      // console.log(JSON.parse(test_array2));
+      // JSON.parse(window.localStorage.getItem("location")); //see if can change this, move to global variable?
+      // if (place_array.length > 5) {
+      //   //stop pushing at 5, pop first element
+      // }
+
+
+
+      // console.log(window.localStorage.setItem("location", JSON.stringify(place_array))); //need to figure out what stringify does --> converts the WHOLE array to a string "htye, fhefie"
       var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + place + "&APPID=" + APIKey;
-
       // Runs AJAX call to the OpenWeatherMap API
-      $.ajax({
-        url: queryURL,
-        method: "GET"
-      })
-        .then(function (response) {
-          // Log the resulting object
-          console.log(response);
-
-          $(".result_city").text(response.name + " Weather");
-          $(".temp").text("Temperature (F) " + response.main.temp);
-          $(".wind").text("Wind Speed: " + response.wind.speed);
-          $(".humidity").text("Humidity: " + response.main.humidity);
-          $(".UVindex").text("UV index " + response.main.temp);
-
-          // Converts the temp to Kelvin with the below formula
-          var tempF = (response.main.temp - 273.15) * 1.80 + 32;
-          $(".tempF").text("Temperature (Kelvin) " + tempF);
-        });
+      // uncomment starting here: 
+      // $.ajax({
+      //   url: queryURL,
+      //   method: "GET"
+      // })
+      //   .then(function (response) {
+      //     // Log the resulting object
+      //     console.log(response);
+      //     var tempF = (response.main.temp - 273.15) * 1.8 + 32; //how round this
+      //     $(".result_city").text(response.name + " Weather");
+      //     $(".temp").text("Temperature (F) " + tempF);
+      //     $(".wind").text("Wind Speed: " + response.wind.speed);
+      //     $(".humidity").text("Humidity: " + response.main.humidity);
+      //     $(".UVindex").text("UV index " + response.main.temp); //figure out which one is the UV index
+      //   });
     });
 
     //5 day forecast calls
     $("#5_day").on("click", function () {
       //retreive from local storage
-      place = localStorage.getItem("activity"); 
+      // place = localStorage.getItem("location");
+      // var recent_cities = JSON.parse(window.localStorage.getItem("location")) || []; //see if can change this
+      // console.log(recent_cities);
 
+      place = "Seattle";
+      var recent_cities = window.localStorage.getItem("location");
+      console.log(recent_cities);
+      console.log(recent_cities.length);
+
+      for (i = 0; i < recent_cities.length; i++) {
+        $(".5_day").append($("<button>").text(recent_cities[i])); //create button tag with cities 
+      }
       // builds the URL to query the database add more with &itemkey=variable
       var queryURL5_day = "https://api.openweathermap.org/data/2.5/forecast?q=" + place + "&APPID=" + APIKey;
       console.log(queryURL5_day);
-
       $.ajax({
         url: queryURL5_day,
         method: "GET"
       })
         .then(function (response) {
           console.log("success");
+          console.log(response);
           // Log the resulting object
         });
     });
+
+    initial_page();
 
   </script>
 
