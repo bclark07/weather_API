@@ -1,163 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <!-- need to add link for style framework - bootstrap ?-->
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+      integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf"
+      crossorigin="anonymous"
+    />
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>Weather Page</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
-    integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
-  <title>Weather Page</title>
-</head>
+  <body>
+    <div>
+      <h1 id="day"></h1>
+    </div>
+    <div class="search_city">
+      <p>What city do you want the weather for?</p>
+      <input class="city" />
+      <button id="retrieve">
+        <i class="fas fa-search"> Search</i>
+      </button>
+    </div>
 
-<body>
-  <div class=search_city>
-    <p> What city do you want the weather for?</p>
-    <input class="city">
-    <button id="retrieve">
-      <i class="fas fa-search"> Search</i>
-    </button>
-  </div>
+    <div class="return_results">
+      <!-- div for current weather  -->
+      <h1 class="result_city"></h1>
+      <!--created in script-->
+      <!-- add today's m/d date -->
+      <img class="city_img" />
+      <div class="temp"></div>
+      <div class="wind"></div>
+      <div class="humidity"></div>
+    </div>
+    <br />
+    <div class="5_day">
+      <button id="5_day">5 Day Forecast</button>
+    </div>
 
-  <div class="return_results">
-    <!-- div for current weather  -->
-    <h1 class="result_city"></h1>
-    <!--created in script-->
-    <!-- add today's m/d date -->
-    <!-- add city image -->
-    <div class="temp"></div>
-    <div class="wind"></div>
-    <div class="humidity"></div>
-    <div class="UVindex"></div>
-  </div>
-  <br>
-  <div class="5_day">
-    <button id="5_day">5 Day Forecast</button>
-  </div>
+    <!-- need this for jquery, must go before script file -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <!-- allows moment() to work  -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <!-- links to script file  -->
+    <script src="./script.js"></script>
 
-  <!-- These are copied from a different assignment, how know which ones I need? -->
-  <!-- <script src="https://code.jquery.com/jquery-3.4.1.min.js">
-  </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js">
-  </script> -->
+    <!-- These are copied from a different assignment, how know which ones I need? -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- need these for bootstrap ?-->
 
-  <script type="text/javascript">
-    var APIKey = "97dd4cc64358226e6742b24a9af7c830";
-    var logged_string = window.localStorage.getItem("cities");
-    var recent_cities = [];
-
-    function initial_page() {
-      if (logged_string !== null) {
-        recent_cities = logged_string.split(","); 
-        var position = recent_cities.length;
-        //displays weather from most recent search
-        var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + recent_cities[position - 1] + "&APPID=" + APIKey;
-        $.ajax({
-          url: queryURL,
-          method: "GET"
-        })
-          .then(function (response) {
-            // Log the resulting object
-            console.log(response);
-            var tempF = (response.main.temp - 273.15) * 1.8 + 32; //how round this
-            $(".result_city").text(response.name + " Weather");
-            $(".temp").text("Temperature (F) " + tempF);
-            $(".wind").text("Wind Speed: " + response.wind.speed);
-            $(".humidity").text("Humidity: " + response.main.humidity);
-            $(".UVindex").text("UV index " + response.main.temp); //figure out which one is the UV index
-          });
-      } else { console.log("nothing saved"); }
-    }
-
-    //click event on #retrieve to get value from neighbor box .city and update search
-
-    $("#retrieve").on("click", function () {
-      //pulls data from input box 
-      var place = $(this).siblings("input").val();
-      if (recent_cities.length < 5) {
-        console.log("short");
-        recent_cities.push(place);
-        window.localStorage.setItem("cities", recent_cities);
-      } else {
-        console.log("too long");
-        recent_cities.splice(0, 1);
-        recent_cities.push(place);
-        window.localStorage.setItem("cities", recent_cities);
-      }
-
-      // need to do stringify and parse on place1 then place2 
-      //place 1 - string does [obj obj], parse doensnt work
-
-
-      // window.localStorage.setItem("location", place_obj);
-      // var test_array1 = window.localStorage.getItem("location");
-      // console.log(test_array1);
-
-
-      // console.log(JSON.parse(test_array2));
-      // JSON.parse(window.localStorage.getItem("location")); //see if can change this, move to global variable?
-      // if (place_array.length > 5) {
-      //   //stop pushing at 5, pop first element
-      // }
-
-
-
-      // console.log(window.localStorage.setItem("location", JSON.stringify(place_array))); //need to figure out what stringify does --> converts the WHOLE array to a string "htye, fhefie"
-      var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + place + "&APPID=" + APIKey;
-      // Runs AJAX call to the OpenWeatherMap API
-      // uncomment starting here: 
-      // $.ajax({
-      //   url: queryURL,
-      //   method: "GET"
-      // })
-      //   .then(function (response) {
-      //     // Log the resulting object
-      //     console.log(response);
-      //     var tempF = (response.main.temp - 273.15) * 1.8 + 32; //how round this
-      //     $(".result_city").text(response.name + " Weather");
-      //     $(".temp").text("Temperature (F) " + tempF);
-      //     $(".wind").text("Wind Speed: " + response.wind.speed);
-      //     $(".humidity").text("Humidity: " + response.main.humidity);
-      //     $(".UVindex").text("UV index " + response.main.temp); //figure out which one is the UV index
-      //   });
-    });
-
-    //5 day forecast calls
-    $("#5_day").on("click", function () {
-      //retreive from local storage
-      // place = localStorage.getItem("location");
-      // var recent_cities = JSON.parse(window.localStorage.getItem("location")) || []; //see if can change this
-      // console.log(recent_cities);
-
-      place = "Seattle";
-      var recent_cities = window.localStorage.getItem("location");
-      console.log(recent_cities);
-      console.log(recent_cities.length);
-
-      for (i = 0; i < recent_cities.length; i++) {
-        $(".5_day").append($("<button>").text(recent_cities[i])); //create button tag with cities 
-      }
-      // builds the URL to query the database add more with &itemkey=variable
-      var queryURL5_day = "https://api.openweathermap.org/data/2.5/forecast?q=" + place + "&APPID=" + APIKey;
-      console.log(queryURL5_day);
-      $.ajax({
-        url: queryURL5_day,
-        method: "GET"
-      })
-        .then(function (response) {
-          console.log("success");
-          console.log(response);
-          // Log the resulting object
-        });
-    });
-
-    initial_page();
-
-  </script>
-
-
-</body>
-
+    <!-- <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+      crossorigin="anonymous"
+    ></script> -->
+  </body>
 </html>
