@@ -15,18 +15,44 @@
       href="https://fonts.googleapis.com/css?family=Open+Sans&display=swap"
       rel="stylesheet"
     />
+    <!-- loads bulma stylesheet  -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.8.0/css/bulma.css"
+      rel="stylesheet"
+    />
+    <!-- loads bootstrap stylesheet  -->
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+
     <link rel="stylesheet" href="style.css" />
     <title>Weather Page</title>
   </head>
 
   <body>
+    <nav class="navbar" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand"></div>
+    </nav>
+
+    <!-- load up to 5 most recent searches at the top  -->
+    <div class="columns" id="recent_5">
+      <div
+        class="column has-background-info has-text-white border border-white align-middle"
+        id="rs"
+      >
+        Recent Searches:
+      </div>
+    </div>
     <div>
       <h1 id="day"></h1>
     </div>
     <div class="search_city">
       <p>What city do you want the weather for?</p>
       <input class="city" />
-      <button id="retrieve">
+
+      <button class="btn btn-warning" id="retrieve">
+        <!-- <button class="button is-primary" id="retrieve"> -->
         <i class="fas fa-search"> Search</i>
       </button>
     </div>
@@ -43,7 +69,9 @@
     </div>
     <br />
     <div class="5_day">
-      <button id="5_day">5 Day Forecast</button>
+      <button class="button is-primary is-rounded" id="5_day">
+        5 Day Forecast
+      </button>
     </div>
 
     <!-- need this for jquery, must go before script file -->
@@ -52,22 +80,5 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <!-- links to script file  -->
     <script src="./script.js"></script>
-
-    <!-- These are copied from a different assignment, how know which ones I need? -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-
-    <!-- need these for bootstrap ?-->
-
-    <!-- <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-      integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-      integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-      crossorigin="anonymous"
-    ></script> -->
   </body>
 </html>
