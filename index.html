@@ -65,17 +65,24 @@
     </div>
     <br />
     <div class="5_day">
-      <button class="button is-primary is-rounded">
+      <div
+        class="column has-background-info has-text-white border border-white align-middle"
+        id="daily"
+      >
         5 Day Forecast
-      </button>
-      <div class="columns" id="5_day">
-        <div
-          class="column has-background-info has-text-white border border-white align-middle"
-          id="daily"
-        >
-          5 Day Forecast
-        </div>
       </div>
+      <table class="table is-fullwidth table is-striped">
+        <thead>
+          <tr>
+            <th>Day</th>
+            <th>Image</th>
+            <th>Temperature (F)</th>
+            <th>Humidity (%)</th>
+          </tr>
+        </thead>
+        <tbody id="5_day"></tbody>
+      </table>
+      <!-- </div> -->
     </div>
 
     <!-- need this for jquery, must go before script file -->

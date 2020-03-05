@@ -37,9 +37,8 @@ $("#retrieve").on("click", function() {
     .children()
     .not("#rs")
     .remove();
-  $(".5_day")
+  $("#5_day")
     .children()
-    .not("#5_day")
     .remove();
   //re-loads recent searches list for header
   updateSaved();
@@ -79,26 +78,26 @@ function weather_5day() {
     url: queryURL5_day,
     method: "GET"
   }).then(function(response) {
-    for (var k = 0; k < 40; k = k + 8) {
-      // var sky = response.list[k].weather[0].main; //this has to stay zero
+    for (var k = 0, i = 1; k < 40; k = k + 8, i++) {
+      var sky = response.list[k].weather[0].main; //weather index has to stay zero
       var tempF = Math.round((response.list[k].main.temp - 273.15) * 1.8 + 32);
-      console.log(tempF);
-      console.log("Humidity: " + response.list[k].main.humidity + "%");
-      console.log("Date " + response.list[k].dt_txt);
-      $(".5_day").append($("<button>").text(tempF)); //creates button tag with cities, needs to be put into a div
-      var day5 = $("<div>").attr("class", "columns is-gapless");
-      // day5.append(
-      //   $("<div>")
-      //     .attr("class", "column")
-      //     .append($("<img>").attr("src", select_img(sky)))
-      // );
+      var humid = response.list[k].main.humidity + "%";
+      var day5 = $("<tr>");
       day5.append(
-        $("<div>")
-          .attr("class", "column")
-          .text("Temperature (F): " + tempF)
-          .text("Humidity: " + response.list[k].main.humidity + "%")
+        $("<td>").text(
+          moment()
+            .add(i, "days")
+            .calendar()
+        )
       );
-      $("#5_day" + i).append(day5);
+      day5.append(
+        $("<td>")
+          .attr("class", "image is-64x64")
+          .append($("<img>").attr("src", select_img(sky)))
+      );
+      day5.append($("<td>").text(tempF));
+      day5.append($("<td>").text(humid));
+      $("#5_day").append(day5);
     }
   });
 }
