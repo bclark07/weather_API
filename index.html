@@ -50,9 +50,7 @@
     <div class="search_city">
       <p>What city do you want the weather for?</p>
       <input class="city" />
-
-      <button class="btn btn-warning" id="retrieve">
-        <!-- <button class="button is-primary" id="retrieve"> -->
+      <button class="button is-warning" id="retrieve">
         <i class="fas fa-search"> Search</i>
       </button>
     </div>
@@ -60,18 +58,24 @@
     <div class="return_results">
       <!-- div for current weather  -->
       <h1 class="result_city"></h1>
-      <!--created in script-->
-      <!-- add today's m/d date -->
       <img class="city_img" />
-      <div class="temp"></div>
-      <div class="wind"></div>
-      <div class="humidity"></div>
+      <p class="temp"></p>
+      <p class="wind"></p>
+      <p class="humidity"></p>
     </div>
     <br />
     <div class="5_day">
-      <button class="button is-primary is-rounded" id="5_day">
+      <button class="button is-primary is-rounded">
         5 Day Forecast
       </button>
+      <div class="columns" id="5_day">
+        <div
+          class="column has-background-info has-text-white border border-white align-middle"
+          id="daily"
+        >
+          5 Day Forecast
+        </div>
+      </div>
     </div>
 
     <!-- need this for jquery, must go before script file -->

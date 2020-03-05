@@ -1,5 +1,5 @@
 var APIKey = "97dd4cc64358226e6742b24a9af7c830";
-var logged_string = window.localStorage.getItem("cities");
+var logged_string = localStorage.getItem("cities");
 var recent_cities = [];
 
 function initialize_page() {
@@ -7,34 +7,11 @@ function initialize_page() {
 
   if (logged_string !== null) {
     recent_cities = logged_string.split(",");
-    //load recent cities list for header
-
+    //load recent searches list for header
     updateSaved();
-
-    //populates 5 day forecast of most recent search:
-    var queryURL =
-      "https://api.openweathermap.org/data/2.5/weather?q=" +
-      recent_cities[0] +
-      "&APPID=" +
-      APIKey;
-    $.ajax({
-      url: queryURL,
-      method: "GET"
-    }).then(function(response) {
-      var pic = response.weather[0].main;
-      // var pic = $("<img>").attr("src", select_img(sky));
-      console.log(select_img(pic));
-      $(".city_img").attr("src", select_img(pic));
-
-      // Log the resulting object
-      console.log(response);
-      var tempF = (response.main.temp - 273.15) * 1.8 + 32; //how round this
-      $(".result_city").text(response.name + " Weather");
-      $(".temp").text("Temperature (F): " + tempF);
-      $(".wind").text("Wind Speed: " + response.wind.speed);
-      $(".humidity").text("Humidity: " + response.main.humidity);
-      $(".UVindex").text("UV index " + response.main.temp); //figure out which one is the UV index
-    });
+    //load recent searches list for body
+    today();
+    weather_5day();
   }
 }
 
@@ -48,39 +25,13 @@ $("#retrieve").on("click", function() {
   if (recent_cities.length < 5) {
     //adds to array
     recent_cities.splice(0, 0, place);
-    window.localStorage.setItem("cities", recent_cities);
+    localStorage.setItem("cities", recent_cities);
   } else {
     //removes and adds to beginning of array
     recent_cities.splice(0, 0, place);
     recent_cities.pop();
-    window.localStorage.setItem("cities", recent_cities);
+    localStorage.setItem("cities", recent_cities);
   }
-
-  var queryURL =
-    "https://api.openweathermap.org/data/2.5/weather?q=" +
-    place +
-    "&APPID=" +
-    APIKey;
-  // Runs AJAX call to the OpenWeatherMap API
-  $.ajax({
-    url: queryURL,
-    method: "GET"
-  }).then(function(response) {
-    // Log the resulting object
-    console.log(response);
-    var sky = response.weather[0].main;
-    // var pic = $("<img>").attr("src", select_img(sky));
-    console.log(select_img(sky));
-    // console.log(pic);
-    //    console.log(response[3]);
-    var tempF = (response.main.temp - 273.15) * 1.8 + 32; //how round this
-    // pic.appendTo("return_results");
-    $(".city_img").attr("src", select_img(sky));
-    $(".result_city").text(response.name + " Weather");
-    $(".temp").text("Temperature (F): " + tempF);
-    $(".wind").text("Wind Speed: " + response.wind.speed);
-    $(".humidity").text("Humidity: " + response.main.humidity);
-  });
   //updates recent search list without page refresh
   $("#recent_5")
     .children()
@@ -90,56 +41,109 @@ $("#retrieve").on("click", function() {
     .children()
     .not("#5_day")
     .remove();
+  //re-loads recent searches list for header
   updateSaved();
+  today();
+  weather_5day();
 });
-// generate buttons on search populated by local storage
 
-//5 day forecast calls should be on click of the city
-$("#5_day").on("click", function() {
-  //most this to initialize page once creating a 5 day forecast for a city
-  test_city = "Seattle";
-  // builds the URL to query the database add more with &itemkey=variable
-  var queryURL5_day =
-    "https://api.openweathermap.org/data/2.5/forecast?q=" +
-    test_city +
+//updates weather data from today into body
+function today() {
+  var queryURL =
+    "https://api.openweathermap.org/data/2.5/weather?q=" +
+    recent_cities[0] +
     "&APPID=" +
     APIKey;
-  console.log(queryURL5_day);
+  $.ajax({
+    url: queryURL,
+    method: "GET"
+  }).then(function(response) {
+    console.log(response);
+    var pic = response.weather[0].main;
+    $(".city_img").attr("src", select_img(pic));
+    var tempF = Math.round((response.main.temp - 273.15) * 1.8 + 32);
+    $(".result_city").text(response.name + " Weather");
+    $(".temp").text("Temperature (F): " + tempF);
+    $(".wind").text("Wind Speed: " + response.wind.speed + " m/s");
+    $(".humidity").text("Humidity: " + response.main.humidity + "%");
+  });
+}
+
+function weather_5day() {
+  var queryURL5_day =
+    "https://api.openweathermap.org/data/2.5/forecast?q=" +
+    recent_cities[0] +
+    "&APPID=" +
+    APIKey;
   $.ajax({
     url: queryURL5_day,
     method: "GET"
   }).then(function(response) {
-    console.log("success");
-    console.log(response);
-    // Log the resulting object
+    for (var k = 0; k < 40; k = k + 8) {
+      // var sky = response.list[k].weather[0].main; //this has to stay zero
+      var tempF = Math.round((response.list[k].main.temp - 273.15) * 1.8 + 32);
+      console.log(tempF);
+      console.log("Humidity: " + response.list[k].main.humidity + "%");
+      console.log("Date " + response.list[k].dt_txt);
+      $(".5_day").append($("<button>").text(tempF)); //creates button tag with cities, needs to be put into a div
+      var day5 = $("<div>").attr("class", "columns is-gapless");
+      // day5.append(
+      //   $("<div>")
+      //     .attr("class", "column")
+      //     .append($("<img>").attr("src", select_img(sky)))
+      // );
+      day5.append(
+        $("<div>")
+          .attr("class", "column")
+          .text("Temperature (F): " + tempF)
+          .text("Humidity: " + response.list[k].main.humidity + "%")
+      );
+      $("#5_day" + i).append(day5);
+    }
   });
-});
+}
 
 function updateSaved() {
   for (i = 0; i < recent_cities.length; i++) {
-    $(".5_day").append($("<button>").text(recent_cities[i])); //creates button tag with cities, needs to be put into a div
-    $("#recent_5").append(
-      $("<div>")
-        .attr(
-          "class",
-          "column has-background-info has-text-white border border-white"
-        )
-        .attr("id", i)
-        .text(recent_cities[i])
-    ); //creates button tag with cities, needs to be put into a div
-    var nested = $("<div>").attr("class", "columns is-gapless");
-    nested.append(
-      $("<div>")
-        .attr("class", "column")
-        .append($("<img>").attr("src", select_img("Clear")))
-    );
-    nested.append(
-      $("<div>")
-        .attr("class", "column")
-        .text("68 F")
-    );
-
-    $("#" + i).append(nested);
+    console.log(i);
+    var queryURL =
+      "https://api.openweathermap.org/data/2.5/weather?q=" +
+      recent_cities[i] +
+      "&APPID=" +
+      APIKey;
+    $.ajax({
+      url: queryURL,
+      async: false, //need this to slow it down
+      ajaxI: i, // Capture the current value of 'i' to reset if gets asynchronous
+      method: "GET"
+    }).then(function(response) {
+      i = this.ajaxI;
+      var sky = response.weather[0].main; //this has to stay zero
+      var tempF = Math.round((response.main.temp - 273.15) * 1.8 + 32);
+      //updates the top recent searches bar with current weather info
+      $("#recent_5").append(
+        $("<div>")
+          .attr(
+            "class",
+            "column has-background-info has-text-white border border-white"
+          )
+          .attr("id", i)
+          .text(recent_cities[i])
+      );
+      var nested = $("<div>").attr("class", "columns is-gapless");
+      nested.append(
+        $("<div>")
+          .attr("class", "column")
+          .append($("<img>").attr("src", select_img(sky)))
+      );
+      nested.append(
+        $("<div>")
+          .attr("class", "column")
+          .text("Temperature (F): " + tempF)
+          .text("Humidity: " + response.main.humidity + "%")
+      );
+      $("#" + i).append(nested);
+    });
   }
 }
 
@@ -155,7 +159,10 @@ function select_img(image_selector) {
       return "./img/snow.jpeg";
     case "Extreme":
       return "./img/extreme.jpeg";
+    case "Drizzle":
+      return "./img/rain.jpeg";
     default:
+      confirm("no image");
       return "";
   }
 }
